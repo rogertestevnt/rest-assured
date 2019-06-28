@@ -8,34 +8,6 @@
     <artifactId>restAssuredProject</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-<!--    <build>-->
-<!--        &lt;!&ndash; Source directory configuration &ndash;&gt;-->
-<!--        <sourceDirectory>src</sourceDirectory>-->
-<!--        <plugins>-->
-<!--            &lt;!&ndash; Following plugin executes the testng tests &ndash;&gt;-->
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-surefire-plugin</artifactId>-->
-<!--                <version>2.22.2</version>-->
-<!--                <configuration>-->
-<!--                    &lt;!&ndash; Suite testng xml file to consider for test execution &ndash;&gt;-->
-<!--                    <suiteXmlFiles>-->
-<!--                        <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>-->
-<!--                    </suiteXmlFiles>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
-<!--            &lt;!&ndash; Compiler plugin configures the java version to be usedfor compiling-->
-<!--                the code &ndash;&gt;-->
-<!--            <plugin>-->
-<!--                <artifactId>maven-compiler-plugin</artifactId>-->
-<!--                <configuration>-->
-<!--                    <source>1.6</source>-->
-<!--                    <target>1.6</target>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
-<!--        </plugins>-->
-<!--    </build>-->
-
     <dependencies>
         <!-- https://mvnrepository.com/artifact/io.rest-assured/rest-assured -->
         <dependency>
