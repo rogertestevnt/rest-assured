@@ -1,5 +1,10 @@
 
+import com.google.gson.JsonElement;
+import org.junit.Assert;
 import org.junit.Test;
+import utils.JsonUtils;
+
+import java.io.FileNotFoundException;
 
 import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
@@ -25,4 +30,5 @@ public class RestAssuredSampleTest {
     public void getUser() {
         get(url + "/2").then().body("data.email", equalTo("janet.weaver@reqres.in"));
     }
+
 }
