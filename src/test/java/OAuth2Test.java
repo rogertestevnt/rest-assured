@@ -1,25 +1,73 @@
+import com.google.gson.JsonObject;
 import io.restassured.response.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.ReadJsonFile;
+
+import java.io.FileNotFoundException;
 
 import static io.restassured.RestAssured.given;
 
 public class OAuth2Test {
 
-    private final static String tokenUrl = "";
-    private final static String businessUrl = "";
-    private final static String username= "";
-    private final static String password = "";
-    private final static String clientId = "";
-    private final static String clientSecret = "";
-    private final static String scope = "";
+    private static String tokenUrl;
+    private static String businessUrl;
+    private static String username ;
+    private static String password ;
+    private static String clientId;
+    private static String clientSecret;
+    private static String scope;
 
     private final Logger logger = LoggerFactory.getLogger(OAuth2Test.class);
 
+
+    @Before
+    public void InitializeVariables() throws FileNotFoundException{
+
+        JsonObject jsonObject = ReadJsonFile.readJson();
+
+        businessUrl =  jsonObject.get("businessUrl").getAsString();
+        username = jsonObject.get("email").getAsString();
+        password = jsonObject.get("password").getAsString();
+        clientId = jsonObject.get("clientId").getAsString();
+        clientSecret = jsonObject.get("clientSecret").getAsString();
+        scope = jsonObject.get("scope").getAsString();
+        tokenUrl = jsonObject.get("tokenUrl").getAsString();
+
+    }
+
+    @Test
+    public void testAuthWithResourceOwnerCredentials() throws JSONException {
+
+        final String accessToken = resourceOwnerLogin(tokenUrl, clientId, clientSecret, username, password, scope);
+        getCustomerPointsBalance(accessToken);
+        callAddDuplicatedPoints(accessToken);
+    }
+
+    @Ignore
+    @Test
+    public void testAuthWithClientCredentials() throws JSONException {
+        final String accessToken = clientCredentialsLogin(tokenUrl, clientId, clientSecret, scope);
+        logger.info("AccessToken = {}", accessToken);
+    }
+
+    /**
+     * This method performs the login based on user credentials and returns the access token
+     * The variables are taken from the data.json file found at utils/data.json
+     * @param tokenUri
+     * @param clientId
+     * @param clientSecret
+     * @param username
+     * @param password
+     * @param scope
+     * @return AccessToken
+     * @throws JSONException
+     */
     private String resourceOwnerLogin(String tokenUri, String clientId, String clientSecret, String username, String password, String scope) throws JSONException {
         logger.info("Getting OAuth Token from server - {}", tokenUri);
         Response response =
@@ -34,10 +82,14 @@ public class OAuth2Test {
         JSONObject jsonObject = new JSONObject(response.getBody().asString());
         String accessToken = jsonObject.get("access_token").toString();
         String tokenType = jsonObject.get("token_type").toString();
-        logger.info("Oauth Token for {} with type {} is {}", username, tokenType, accessToken);
+        logger.info("Oauth Token for user {} with type {} is {}", username, tokenType, accessToken);
         return accessToken;
     }
 
+    /**
+     * This method performs a post as an attempt to add points code already added
+     * @param accessToken
+     */
     public void callAddDuplicatedPoints(String accessToken) {
         //language=JSON
         String jsonString = "{\"productId\":8,\"code\":\"200002020207\"}";
@@ -55,6 +107,26 @@ public class OAuth2Test {
         }
     }
 
+    /**
+     * This method performs a get call to the end point that returns the customer balance
+     * @param accessToken
+     */
+
+    public void getCustomerPointsBalance(String accessToken) {
+
+        Response response = given().auth().preemptive().oauth2(accessToken)
+                .contentType("application/json")
+                .when()
+                .get(businessUrl + "api/private/manager/customer/balance");
+        String responseBody = response.getBody().asString();
+        if (responseBody.contains("accumulatedPoints") || response.getStatusCode() == 200){
+            logger.info("Successful Response = " + responseBody);
+        } else {
+            logger.error("UnSuccessful Response = = {}", responseBody);
+        }
+    }
+
+    //The method below i not being currently used
     private String clientCredentialsLogin(String tokenUri, String clientId, String clientSecret, String scope) throws JSONException {
         logger.info("Getting OAuth Token from server - {}", tokenUri);
         Response response =
@@ -70,42 +142,5 @@ public class OAuth2Test {
         logger.info("Oauth Token with type {} is {}", tokenType, accessToken);
         return accessToken;
     }
-
-    public void getDataFromResourceServer(String accessToken) {
-        Response response = given().auth().preemptive().oauth2(accessToken)
-                .contentType("application/json")
-                .when()
-                .get(businessUrl + "api/private/manager/customer/balance");
-        String responseBody = response.getBody().asString();
-        if (responseBody.contains("accumulatedPoints")){
-            System.out.println("Success");
-        }
-
-        if (response.getStatusCode() == 200) {
-            logger.info("Successfull Response = " + responseBody);
-        } else {
-            logger.error("UnSuccessfull Response = = {}", responseBody);
-        }
-    }
-
-    @Test
-    public void testAuthWithResourceOwnerCredentials() throws JSONException {
-        final String accessToken = resourceOwnerLogin(tokenUrl, clientId, clientSecret, username, password, scope);
-        logger.info("AccessToken = {}", accessToken);
-        //TODO: Whatever you want to do with access token now
-        getDataFromResourceServer(accessToken);
-        callAddDuplicatedPoints(accessToken);
-    }
-
-    @Ignore
-    @Test
-    public void testAuthWithClientCredentials() throws JSONException {
-        final String accessToken = clientCredentialsLogin(tokenUrl, clientId, clientSecret, scope);
-        logger.info("AccessToken = {}", accessToken);
-        //TODO: Whatever you want to do with access token now
-        getDataFromResourceServer(accessToken);
-
-    }
-
 }
 

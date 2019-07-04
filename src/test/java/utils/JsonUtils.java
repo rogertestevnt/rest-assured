@@ -14,13 +14,14 @@ public class JsonUtils {
 
         public static void main(String[] args) throws FileNotFoundException {
             String path = "/home/vntrool/Downloads/MOCK_DATA.json";
+
             BufferedReader bufferedReader = new BufferedReader(new FileReader(path));
 
             Gson gson = new Gson();
             Object json = gson.fromJson(bufferedReader, Object.class);
 
-//            System.out.println(json.getClass());
-//            System.out.println(json.toString());
+            System.out.println(json.getClass());
+            System.out.println(json.toString());
 
             testGson(gson, path);
         }
