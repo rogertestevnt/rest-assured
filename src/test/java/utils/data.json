@@ -1,9 +1,9 @@
 {
   "email":"rest@ssured.io",
-  "password":"Rewards@10",
-  "clientId":"rewards_cli_web",
-  "clientSecret":"epson_rewards_cli_web_2017",
-  "scope":"read write",
-  "tokenUrl":"http://172.25.40.20:17080/uaa/oauth/token",
-  "businessUrl":"http://172.25.40.20:17080/business/"
+  "password":"",
+  "clientId":"",
+  "clientSecret":"",
+  "scope":"",
+  "tokenUrl":"",
+  "businessUrl":""
 }
